@@ -122,7 +122,7 @@
 <br/>
 <br/>
 <br/>
-Aucunes données ne sont enregistrées sur nos serveurs, la création du PDF est faites à la volée, nous utilisons Google Analytics pour savoir quelle région en génèrent le plus (pour le moment c'est la régions parisienne ça va de soit)...<br /><br />
+Aucunes données ne sont enregistrées sur nos serveurs, la création du PDF est faites directement avec les données fournies (voir code source ^^), nous utilisons Google Analytics pour savoir quelle région en génèrent le plus (pour le moment c'est la régions parisienne ça va de soit)...<br /><br />
 <a href="https://github.com/Toan/jepeuxpasjaicorona.fr" target="_blank">Code source sur github</a>
 </body>
 </html>
