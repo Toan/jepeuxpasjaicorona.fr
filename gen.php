@@ -1,14 +1,14 @@
 <?php
 include 'fpdf/fpdf.php';
-//error_reporting(1);
-//ini_set('display_errors', 1);
-$gender = $_POST['gender'];
 
+$gender = $_POST['gender'];
 $name = $_POST['name'];
 $birthday = $_POST['birthday'];
 $address = $_POST['address'];
 $type = $_POST['type'];
 $pic = $_POST['signimg'];
+$attdate = date("d/m/Y");
+if(validateDate($_POST['attdate'], 'd/m/Y'))
 $attdate = $_POST['attdate'];
 
 $info = getimagesize($pic);
@@ -47,3 +47,9 @@ $pdf->MultiCell(0,5,utf8_decode('Fait le '. $attdate),0,'R');
 
 $pdf->Image($pic, 160, null, 50, 37.5, 'png');
 $pdf->Output('I', 'corona_attestation.pdf');
+
+function validateDate($date, $format = 'Y-m-d H:i:s')
+{
+    $d = DateTime::createFromFormat($format, $date);
+    return $d && $d->format($format) == $date;
+}
