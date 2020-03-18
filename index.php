@@ -86,7 +86,10 @@
         <option value="famille">Familiale/garde d'enfants</option>
         <option value="footing!">Sport individuel/animaux de compagnie</option>
     </select><br />
+    Date de l'attestation : <input type="text" value="<?php echo date("d/m/Y");?>" name="attdate" id="attdate" class="form-control">
+    <br />
     Votre signature :
+
     <br />
     <div class="signature-pad--body">
         <canvas id="myCanvas"></canvas>
