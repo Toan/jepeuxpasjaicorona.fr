@@ -7,10 +7,10 @@ $gender = $_POST['gender'];
 $name = $_POST['name'];
 $birthday = $_POST['birthday'];
 $address = $_POST['address'];
-
 $type = $_POST['type'];
-
 $pic = $_POST['signimg'];
+$attdate = $_POST['attdate'];
+
 $info = getimagesize($pic);
 $pdf = new FPDF();
 $pdf->AddPage();
@@ -43,7 +43,7 @@ $pdf->MultiCell(0,5,utf8_decode('déplacements entre le domicile et le lieu d\'e
     $pdf->MultiCell(0,5,utf8_decode('déplacements brefs, à proximité du domicile, liés à l\'activité physique individuelle des personnes, à l\'exclusion de toute pratique sportive collective, et aux besoins des animaux de compagnie.'),0,'L');
 }
 $pdf->Ln(25);
-$pdf->MultiCell(0,5,utf8_decode('Fait le'. date("d/m/Y")),0,'R');
+$pdf->MultiCell(0,5,utf8_decode('Fait le '. $attdate),0,'R');
 
 $pdf->Image($pic, 160, null, 50, 37.5, 'png');
 $pdf->Output('I', 'corona_attestation.pdf');
