@@ -1,0 +1,184 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="css/bootstrap.min.css" crossorigin="anonymous">
+    <script src="js/popper.min.js" crossorigin="anonymous"></script>
+    <script src="js/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script src="js/jspdf.min.js" crossorigin="anonymous"></script>
+    <script src="js/signature_pad.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-datepicker.min.js"></script>
+    <link rel="stylesheet" href="css/bootstrap-datepicker3.css"/>
+
+    <title>Générateur d'attestation COVID-19</title>
+
+    <style>
+        body { background-color: #fafafa; }
+        #myCanvas {
+            border:2px solid #444;
+            border-radius: 15px;
+            background-color: #fafafa;
+        }
+        .container { margin: 150px auto; }
+    </style>
+<script>
+    function generate_pdf() {
+        var doc = new jsPDF();
+
+        var gender = $('#gender').val();
+        var name = $('#name').val();
+        var birthday = $('#birthday').val();
+        var address =  $('#address').val();
+        var type =  $('#type').val();
+        var lineheight = 7;
+        var attdate = $('#attdate').val();
+        var pos = 0;
+        doc.setFont("arial");
+        doc.setFontStyle("bold");
+        doc.setFontSize(16);
+        pos +=20;
+        doc.text("ATTESTATION DE DÉPLACEMENT DÉROGATOIRE", 105, pos, null, null, "center");
+
+        doc.setFontStyle("normal");
+        doc.setFontSize(10);
+        pos +=5;
+        doc.text("En application de l'article 1er du décret du 16 mars 2020 portant réglementation des\n" +
+            "        déplacements dans le cadre de la lutte contre la propagation du virus Covid-19 :", 105, pos, null, null, "center");
+
+        doc.setFontSize(13);
+        var intro_text = '';
+        if (gender == 1) {
+            intro_text = doc.splitTextToSize("Je soussignée Mme. "+name+" née le "+birthday+" et demeurant "+address+".", 180);
+
+        } else {
+            intro_text = doc.splitTextToSize("Je soussigné M. "+name+" né le "+birthday+" et demeurant "+address+".", 180);
+
+    }
+        pos +=50;
+
+        doc.text(intro_text, 20, pos);
+        pos +=(intro_text.length*lineheight);
+
+        text2 = doc.splitTextToSize("certifie que mon déplacement est lié au motif suivant autorisé par l'article 1er du décret du 16 mars 2020 portant réglementation des déplacements dans le cadre de la lutte contre la propagation du virus Covid-19 :", 180);
+        doc.text(text2, 20, pos);
+        pos +=(text2.length*lineheight);
+
+        if(type=='pro') {
+            text3 = doc.splitTextToSize("déplacements entre le domicile et le lieu d'exercice de l'activité professionnelle, lorsqu'ils sont indispensables à l'exercice d'activités ne pouvant être organisées sous forme de télétravail (sur justificatif permanent) ou déplacements professionnels ne pouvant être différés.", 180);
+        } else if(type=='miam') {
+            text3 = doc.splitTextToSize("déplacements pour effectuer des achats de première nécessité dans des établissements autorisés (liste sur gouvernement.fr).", 180);
+        } else if(type=='argh') {
+            text3 = doc.splitTextToSize("déplacements pour motif de santé.", 180);
+
+        } else if(type=='famille') {
+            text3 = doc.splitTextToSize("déplacements pour motif familial impérieux, pour l’assistance aux personnes vulnérables ou la garde d’enfants.", 180);
+        } else if(type=='footing!') {
+            text3 = doc.splitTextToSize("déplacements brefs, à proximité du domicile, liés à l'activité physique individuelle des personnes, à l'exclusion de toute pratique sportive collective, et aux besoins des animaux de compagnie.", 180);
+        }
+        doc.text(text3, 20, pos);
+        pos +=(text2.length*lineheight)+21;
+        doc.text("Fait le "+attdate, 190, pos, null, null, "right");
+        var canvas = document.getElementById("myCanvas");
+        var imageURI = canvas.toDataURL("image/jpg");
+       // $('#signimg').val(imageURI);
+        pos += 7;
+        doc.addImage(imageURI, "JPEG", 160, pos, 50, 37.5);
+        doc.save('corona_attestation.pdf');
+    }
+</script>
+    <script>
+        $(document).ready(function()
+        {
+            ;(function($){
+            $.fn.datepicker.dates['fr'] = {
+                days: ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"],
+                daysShort: ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."],
+                daysMin: ["d", "l", "ma", "me", "j", "v", "s"],
+                months: ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"],
+                monthsShort: ["janv.", "févr.", "mars", "avril", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."],
+                today: "Aujourd'hui",
+                monthsTitle: "Mois",
+                clear: "Effacer",
+                weekStart: 1,
+                format: "dd/mm/yyyy"
+            };
+        }(jQuery));
+
+            var date_input=$('input[name="birthday"]');
+            var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+            var options={
+                format: 'dd/mm/yyyy',
+                container: container,
+                todayHighlight: true,
+                autoclose: true,
+                language: 'fr'
+            };
+            date_input.datepicker(options);
+        });
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-160964088-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-160964088-1');
+    </script>
+</head>
+<body>
+
+
+<h1>Générateur d'attestation COVID-19</h1>
+
+
+    Civilité : <select name="gender" id="gender" class="form-control">
+        <option value="1">Mme.</option>
+        <option value="2">M.</option>
+    </select><br />
+    Nom et Prénom : <input type="text" value="" name="name" id="name" class="form-control" required>
+    <br />
+    Date de naissance : <input type="text" value="" name="birthday" id="birthday" class="form-control">
+    <br />
+    Adresse : <input type="text" value="" name="address" id="address" class="form-control" required>
+    <br />
+    Nature : <select name="type" id="type" class="form-control">
+        <option value="pro">Professionnel</option>
+        <option value="miam">Achats de première nécessité</option>
+        <option value="argh">Santé</option>
+        <option value="famille">Familiale/garde d'enfants</option>
+        <option value="footing!">Sport individuel/animaux de compagnie</option>
+    </select><br />
+    Date de l'attestation : <input type="text" value="" name="attdate" id="attdate" class="form-control">
+    <br />
+    Votre signature :
+
+    <br />
+    <div class="signature-pad--body">
+        <canvas id="myCanvas"></canvas>
+    </div><br><br>
+    <input type="hidden" value="" id='signimg' name="signimg">
+
+<input type="button" value="Effacer la signature" id="clearb" class="btn btn-danger">
+<input type="button" value="Générer le PDF" onclick="generate_pdf();" class="btn btn-success">
+<script>
+
+
+    var canvas = document.querySelector("canvas");
+
+    var signaturePad = new SignaturePad(canvas);
+    $( "#attdate" ).datepicker({ format: "dd/mm/yyyy"}).datepicker("setDate",new Date());
+    var clearButton = document.getElementById("clearb");
+    clearButton.addEventListener("click", function (event) {
+        signaturePad.clear();
+    });
+</script>
+<br/>
+<br/>
+<br/>
+Aucunes données ne sont enregistrées sur nos serveurs, la création du PDF est faites directement avec les données fournies (voir code source ^^), nous utilisons Google Analytics pour savoir quelle région en génèrent le plus (pour le moment c'est la régions parisienne ça va de soit)...<br /><br />
+<a href="https://github.com/Toan/jepeuxpasjaicorona.fr" target="_blank">Code source sur github</a>
+</body>
+</html>
