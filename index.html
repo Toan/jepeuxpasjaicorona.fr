@@ -24,71 +24,91 @@
         }
         .container { margin: 150px auto; }
     </style>
-<script>
-    function generate_pdf() {
-        var doc = new jsPDF();
+    <script>
 
-        var gender = $('#gender').val();
-        var name = $('#name').val();
-        var birthday = $('#birthday').val();
-        var address =  $('#address').val();
-        var type =  $('#type').val();
-        var lineheight = 7;
-        var attdate = $('#attdate').val();
-        var pos = 0;
-        doc.setFont("arial");
-        doc.setFontStyle("bold");
-        doc.setFontSize(16);
-        pos +=20;
-        doc.text("ATTESTATION DE DÉPLACEMENT DÉROGATOIRE", 105, pos, null, null, "center");
+        function gettime() {
+            var time=new Date();
 
-        doc.setFontStyle("normal");
-        doc.setFontSize(10);
-        pos +=5;
-        doc.text("En application de l'article 1er du décret du 16 mars 2020 portant réglementation des\n" +
-            "        déplacements dans le cadre de la lutte contre la propagation du virus Covid-19 :", 105, pos, null, null, "center");
+            var h=time.getHours();
+            if (h<10) {h = "0" + h}
+            var m=time.getMinutes();
+            if (m<10) {m = "0" + m}
 
-        doc.setFontSize(13);
-        var intro_text = '';
-        if (gender == 1) {
-            intro_text = doc.splitTextToSize("Je soussignée Mme. "+name+" née le "+birthday+" et demeurant "+address+".", 180);
-
-        } else {
-            intro_text = doc.splitTextToSize("Je soussigné M. "+name+" né le "+birthday+" et demeurant "+address+".", 180);
-
-    }
-        pos +=50;
-
-        doc.text(intro_text, 20, pos);
-        pos +=(intro_text.length*lineheight);
-
-        text2 = doc.splitTextToSize("certifie que mon déplacement est lié au motif suivant autorisé par l'article 1er du décret du 16 mars 2020 portant réglementation des déplacements dans le cadre de la lutte contre la propagation du virus Covid-19 :", 180);
-        doc.text(text2, 20, pos);
-        pos +=(text2.length*lineheight);
-
-        if(type=='pro') {
-            text3 = doc.splitTextToSize("déplacements entre le domicile et le lieu d'exercice de l'activité professionnelle, lorsqu'ils sont indispensables à l'exercice d'activités ne pouvant être organisées sous forme de télétravail (sur justificatif permanent) ou déplacements professionnels ne pouvant être différés.", 180);
-        } else if(type=='miam') {
-            text3 = doc.splitTextToSize("déplacements pour effectuer des achats de première nécessité dans des établissements autorisés (liste sur gouvernement.fr).", 180);
-        } else if(type=='argh') {
-            text3 = doc.splitTextToSize("déplacements pour motif de santé.", 180);
-
-        } else if(type=='famille') {
-            text3 = doc.splitTextToSize("déplacements pour motif familial impérieux, pour l’assistance aux personnes vulnérables ou la garde d’enfants.", 180);
-        } else if(type=='footing!') {
-            text3 = doc.splitTextToSize("déplacements brefs, à proximité du domicile, liés à l'activité physique individuelle des personnes, à l'exclusion de toute pratique sportive collective, et aux besoins des animaux de compagnie.", 180);
+            $('#attheure').val(h);
+            $('#attmn').val(m);
         }
-        doc.text(text3, 20, pos);
-        pos +=(text2.length*lineheight)+21;
-        doc.text("Fait le "+attdate, 190, pos, null, null, "right");
-        var canvas = document.getElementById("myCanvas");
-        var imageURI = canvas.toDataURL("image/jpg");
-       // $('#signimg').val(imageURI);
-        pos += 7;
-        doc.addImage(imageURI, "JPEG", 160, pos, 50, 37.5);
-        doc.save('corona_attestation.pdf');
-    }
-</script>
+        function generate_pdf() {
+            var doc = new jsPDF();
+
+            var gender = $('#gender').val();
+            var name = $('#name').val();
+            var birthday = $('#birthday').val();
+            var address =  $('#address').val();
+            var type =  $('#type').val();
+            var lineheight = 7;
+            var attdate = $('#attdate').val();
+            var attville = $('#attville').val();
+            var attcp = $('#attcp').val();
+            var attheure = $('#attheure').val();
+            var attmn = $('#attmn').val();
+            var pos = 0;
+            doc.setFont("arial");
+            doc.setFontStyle("bold");
+            doc.setFontSize(16);
+            pos +=20;
+            doc.text("ATTESTATION DE DÉPLACEMENT DÉROGATOIRE", 105, pos, null, null, "center");
+
+            doc.setFontStyle("normal");
+            doc.setFontSize(10);
+            pos +=5;
+            var header_text =  doc.splitTextToSize("En application de l’article 3 du décret du 23 mars 2020 prescrivant les mesures générales nécessaires pour faire face à l’épidémie de Covid19 dans le cadre de l’état d’urgence sanitaire", 180);
+            doc.text(header_text, 105, pos, null, null, "center");
+
+            doc.setFontSize(13);
+            var intro_text = '';
+            if (gender == 1) {
+                intro_text = doc.splitTextToSize("Je soussignée Mme. "+name+" née le "+birthday+" et demeurant "+address+", "+attcp+", "+attville+".", 180);
+
+            } else {
+                intro_text = doc.splitTextToSize("Je soussigné M. "+name+" né le "+birthday+" et demeurant "+address+", "+attcp+", "+attville+".", 180);
+
+            }
+            pos +=50;
+
+            doc.text(intro_text, 20, pos);
+            pos +=(intro_text.length*lineheight);
+
+            text2 = doc.splitTextToSize("certifie que mon déplacement est lié au motif suivant (cocher la case) autorisé par l’article 3 du décret du 23 mars 2020 prescrivant les mesures générales nécessaires pour faire face à l’épidémie de Covid19 dans le cadre de l’état d’urgence sanitaire :", 180);
+            doc.text(text2, 20, pos);
+            pos +=(text2.length*lineheight);
+
+            if(type=='pro') {
+                text3 = doc.splitTextToSize("Déplacements entre le domicile et le lieu d’exercice de l’activité professionnelle, lorsqu’ils sont indispensables à l’exercice d’activités ne pouvant être organisées sous forme de télétravail ou déplacements professionnels ne pouvant être différés.", 180);
+            } else if(type=='miam') {
+                text3 = doc.splitTextToSize("Déplacements pour effectuer des achats de fournitures nécessaires à l’activité professionnelle et des achats de première nécessité dans des établissements dont les activités demeurent autorisées (liste sur gouvernement.fr).", 180);
+            } else if(type=='argh') {
+                text3 = doc.splitTextToSize("Consultations et soins ne pouvant être assurés à distance et ne pouvant être différés ; consultations et soins des patients atteints d'une affection de longue durée.", 180);
+
+            } else if(type=='famille') {
+                text3 = doc.splitTextToSize("Déplacements pour motif familial impérieux, pour l’assistance aux personnes vulnérables ou la garde d’enfants.", 180);
+            } else if(type=='footing!') {
+                text3 = doc.splitTextToSize("Déplacements brefs, dans la limite d'une heure quotidienne et dans un rayon maximal d'un kilomètre autour du domicile, liés soit à l'activité physique individuelle des personnes, à l'exclusion de toute pratique sportive collective et de toute proximité avec d'autres personnes, soit à la promenade avec les seules personnes regroupées dans un même domicile, soit aux besoins des animaux de compagnie.", 180);
+            } else if(type=='aieaieaie!') {
+                text3 = doc.splitTextToSize("Convocation judiciaire ou administrative.", 180);
+            } else if(type=='faitesunemissiondinteretgeneralmaissurtoutnesortezpas!') {
+                text3 = doc.splitTextToSize("Participation à des missions d’intérêt général sur demande de l’autorité administrative.", 180);
+            }
+            doc.text(text3, 20, pos);
+            pos +=(text2.length*lineheight)+21;
+            doc.text("Fait à "+attville+" le "+attdate+" à "+attheure+"h"+attmn, 190, pos, null, null, "right");
+            var canvas = document.getElementById("myCanvas");
+            var imageURI = canvas.toDataURL("image/jpg");
+            // $('#signimg').val(imageURI);
+            pos += 7;
+            doc.addImage(imageURI, "JPEG", 160, pos, 50, 37.5);
+            doc.save('corona_attestation.pdf');
+        }
+    </script>
     <script>
         $(document).ready(function()
         {
@@ -129,42 +149,48 @@
     </script>
 </head>
 <body>
-
-<div style="text-align: center">D'après <a href="https://www.bfmtv.com/tech/confinement-finalement-l-attestation-sur-smartphone-ne-suffit-pas-1877104.html" target="_blank">BFMTV</a> et le <a href="https://twitter.com/Place_Beauvau/status/1240236276416118784" target="_blank">Twitter du Ministère de l'intérieur</a>
-   <br> les attestations numérique ne sont plus valable et doivent être imprimée ou manuscrite pour être valable lors d'un contrôle<br>
-D'après le décret <a href="https://www.legifrance.gouv.fr/affichTexte.do?cidTexte=JORFTEXT000041728476&categorieLien=id" target="_blank">2020-260 du 16 mars 2020</a> il faut se munir d'un document (sans précision sur la nature du document)<br>
-et d'après l'article <a href="https://www.legifrance.gouv.fr/affichCodeArticle.do?idArticle=LEGIARTI000006437813&cidTexte=LEGITEXT000006070721&dateTexte=20000314" target="_blank">1316-1 du code civil</a> l'écrit électronique est valable tant que la personne dont il émane est identifiable (ce qui est a priori le cas sur une attestation sur l'honneur)<br>
-Le site ne prend pas position, mais donne juste quelques textes Légifrance, après à chacun de faire comme bon lui semble :)</div>
+<div>Mise à jour avec la nouvelle version de l'attestation du 23 mars 2020</div>
 <br><br>
 <h1>Générateur d'attestation COVID-19</h1>
 
 
-    Civilité : <select name="gender" id="gender" class="form-control">
-        <option value="1">Mme.</option>
-        <option value="2">M.</option>
-    </select><br />
-    Nom et Prénom : <input type="text" value="" name="name" id="name" class="form-control" required>
-    <br />
-    Date de naissance : <input type="text" value="" name="birthday" id="birthday" class="form-control">
-    <br />
-    Adresse : <input type="text" value="" name="address" id="address" class="form-control" required>
-    <br />
-    Nature : <select name="type" id="type" class="form-control">
-        <option value="pro">Professionnel</option>
-        <option value="miam">Achats de première nécessité</option>
-        <option value="argh">Santé</option>
-        <option value="famille">Familiale/garde d'enfants</option>
-        <option value="footing!">Sport individuel/animaux de compagnie</option>
-    </select><br />
-    Date de l'attestation : <input type="text" value="" name="attdate" id="attdate" class="form-control">
-    <br />
-    Votre signature :
+Civilité : <select name="gender" id="gender" class="form-control">
+    <option value="1">Mme.</option>
+    <option value="2">M.</option>
+</select><br />
+Nom et Prénom : <input type="text" value="" name="name" id="name" class="form-control" required>
+<br />
+Date de naissance : <input type="text" value="" name="birthday" id="birthday" class="form-control">
+<br />
+Adresse : <input type="text" value="" name="address" id="address" class="form-control" required>
+<br />
+Code postal : <input type="text" value="" name="attcp" id="attcp" class="form-control">
+<br />
+Ville : <input type="text" value="" name="attville" id="attville" class="form-control">
+<br />
+Nature : <select name="type" id="type" class="form-control">
+    <option value="pro">Professionnel</option>
+    <option value="miam">Achats de première nécessité</option>
+    <option value="argh">Santé</option>
+    <option value="famille">Familiale/garde d'enfants</option>
+    <option value="footing!">Sport individuel/animaux de compagnie</option>
+    <option value="aieaieaie!">Convocation judiciaire ou administration</option>
+    <option value="faitesunemissiondinteretgeneralmaissurtoutnesortezpas!">Missions d'intéret général sur demande des autorités</option>
+</select><br />
 
-    <br />
-    <div class="signature-pad--body">
-        <canvas id="myCanvas"></canvas>
-    </div><br><br>
-    <input type="hidden" value="" id='signimg' name="signimg">
+Date de l'attestation : <input type="text" value="" name="attdate" id="attdate" class="form-control">
+Heure de début de la sortie :
+<div class="form-inline">
+    <input type="text" value="" name="attheure" id="attheure" class="form-control">h<input type="text" value="" name="attmn" id="attmn" class="form-control">
+</div>
+<br />
+Votre signature :
+
+<br />
+<div class="signature-pad--body">
+    <canvas id="myCanvas"></canvas>
+</div><br><br>
+<input type="hidden" value="" id='signimg' name="signimg">
 
 <input type="button" value="Effacer la signature" id="clearb" class="btn btn-danger">
 <input type="button" value="Générer le PDF" onclick="generate_pdf();" class="btn btn-success">
@@ -179,14 +205,13 @@ Le site ne prend pas position, mais donne juste quelques textes Légifrance, apr
     clearButton.addEventListener("click", function (event) {
         signaturePad.clear();
     });
+    gettime();
 </script>
 <br/>
 <br/>
 <br/>
 Aucunes données ne sont enregistrées sur nos serveurs, la création du PDF est faites directement avec les données fournies (voir code source ^^), nous utilisons Google Analytics pour savoir quelle région en génèrent le plus (pour le moment c'est la régions parisienne ça va de soit)...<br />
-Une nouvelle version vient d'être publiée, puisque certains pensent qu'il y a détournement de données, cette nouvelle version est full javascript, elle peut être télécharger sur Github <a href="https://github.com/Toan/jepeuxpasjaicorona.fr/archive/master.zip" target="_blank">Lien direct du telechargement</a> et executer directement en local en ouvrant index.html ! Have fun ;)<br />
-
-L'ancienne version est trouvable <a href="online/">ici</a>, elle n'a probablement plus aucune utilité mais elle reste fonctionelle.<br /><br />
+Une nouvelle version vient d'être publiée, puisque certains pensent qu'il y a détournement de données, cette nouvelle version est full javascript, elle peut être télécharger sur Github <a href="https://github.com/Toan/jepeuxpasjaicorona.fr/archive/master.zip" target="_blank">Lien direct du telechargement</a> et executer directement en local en ouvrant index.html ! Have fun ;)<br /><br />
 <a href="https://github.com/Toan/jepeuxpasjaicorona.fr" target="_blank">Code source sur github</a>
 </body>
 </html>
