@@ -1,28 +1,6 @@
 <!doctype html>
 <html>
 <head>
-    <!--
-    Because ... we are unicorns
-                  ,,))))))));,
-           __)))))))))))))),
-\|/       -\(((((''''((((((((.
--*-==//////((''  .     `)))))),
-/|\      ))| o    ;-.    '(((((                                  ,(,
-         ( `|    /  )    ;))))'                               ,_))^;(~
-            |   |   |   ,))((((_     _____------~~~-.        %,;(;(>';'~
-            o_);   ;    )))(((` ~---~  `::           \      %%~~)(v;(`('~
-                  ;    ''''````         `:       `:::|\,__,%%    );`'; ~
-                 |   _                )     /      `:|`----'     `-'
-           ______/\/~    |                 /        /
-         /~;;.____/;;'  /          ___--,-(   `;;;/
-        / //  _;______;'------~~~~~    /;;/\    /
-       //  | |                        / ;   \;;,\
-      (<_  | ;                      /',/-----'  _>
-       \_| ||_                     //~;~~~~~~~~~
-           `\_|                   (,~~  -Tua Xiong
-                                   \~\
-                                    ~~
-                                    -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -32,6 +10,7 @@
     <script src="js/bootstrap.min.js" crossorigin="anonymous"></script>
     <script src="js/jspdf.min.js" crossorigin="anonymous"></script>
     <script src="js/signature_pad.min.js"></script>
+    <script src="js/qrious.js"></script>
     <script type="text/javascript" src="js/bootstrap-datepicker.min.js"></script>
     <link rel="stylesheet" href="css/bootstrap-datepicker3.css"/>
 
@@ -60,20 +39,60 @@
             $('#attmn').val(m);
         }
         function generate_pdf() {
+
             var doc = new jsPDF();
 
             var gender = $('#gender').val();
             var name = $('#name').val();
+            var firstname = $('#firstname').val();
             var birthday = $('#birthday').val();
+            var borntown = $('#borntown').val();
             var address =  $('#address').val();
-            var type =  $('#type').val();
             var lineheight = 7;
             var attdate = $('#attdate').val();
             var attville = $('#attville').val();
             var attcp = $('#attcp').val();
             var attheure = $('#attheure').val();
             var attmn = $('#attmn').val();
+            var cbtravail = $('#cbtravail');
+            var cbcourses = $('#cbcourses');
+            var cbsante = $('#cbsante');
+            var cbfamille = $('#cbfamille');
+            var cbsport = $('#cbsport');
+            var cbjudiciaire = $('#cbjudiciaire');
+            var cbmissions = $('#cbmissions');
+            var typeval = '';
+            var incval = 0;
+            $('input[name="type"]').each(function(){
+                if($(this).is(':checked')){
+                    if(incval>0){typeval += '-';}
+                    typeval += $(this).val();
+                }
+                incval++;
+            });
+
+            var timeg=new Date();
+
+            var hg=timeg.getHours();
+            if (hg<10) {hg = "0" + hg}
+            var mg=timeg.getMinutes();
+            if (mg<10) {mg = "0" + mg}
+
+            var dg = timeg.getDate();
+            if (dg<10) {dg = "0" + dg}
+            var dm = (timeg.getMonth()+1);
+            if (dm<10) {dm = "0" + dm}
+            var dy = timeg.getFullYear();
             var pos = 0;
+
+            var qrcodedata = 'Cree le: '+dg+'/'+dm+'/'+dy+' a '+hg+'h'+mg+'; Nom: '+name+'; Prenom:'+firstname+'; Naissance: '+birthday+' a '+borntown+'; Adresse: '+address+' '+attcp+' '+attville+'; Sortie: '+attdate+' a '+attheure+'h'+attmn+'; Motifs: '+typeval;
+            var qr = new QRious({
+                value: qrcodedata,
+                size: 256
+            });
+
+           var qrcodeimagee = qr.toDataURL('image/jpeg');
+
             doc.setFont("arial");
             doc.setFontStyle("bold");
             doc.setFontSize(16);
@@ -89,13 +108,13 @@
             doc.setFontSize(13);
             var intro_text = '';
             if (gender == 1) {
-                intro_text = doc.splitTextToSize("Je soussignée Mme. "+name+" née le "+birthday+" et demeurant "+address+", "+attcp+", "+attville+".", 180);
+                intro_text = doc.splitTextToSize("Je soussignée Mme. "+name+" "+firstname+" née le "+birthday+" à "+borntown+" et demeurant "+address+", "+attcp+", "+attville+".", 180);
 
             } else {
-                intro_text = doc.splitTextToSize("Je soussigné M. "+name+" né le "+birthday+" et demeurant "+address+", "+attcp+", "+attville+".", 180);
+                intro_text = doc.splitTextToSize("Je soussigné M. "+name+" "+firstname+" né le "+birthday+" à "+borntown+" et demeurant "+address+", "+attcp+", "+attville+".", 180);
 
             }
-            pos +=50;
+            pos +=20;
 
             doc.text(intro_text, 20, pos);
             pos +=(intro_text.length*lineheight);
@@ -103,35 +122,52 @@
             text2 = doc.splitTextToSize("certifie que mon déplacement est lié au motif suivant (cocher la case) autorisé par l’article 3 du décret du 23 mars 2020 prescrivant les mesures générales nécessaires pour faire face à l’épidémie de Covid19 dans le cadre de l’état d’urgence sanitaire :", 180);
             doc.text(text2, 20, pos);
             pos +=(text2.length*lineheight);
-
-            if(type=='pro') {
-                text3 = doc.splitTextToSize("Déplacements entre le domicile et le lieu d’exercice de l’activité professionnelle, lorsqu’ils sont indispensables à l’exercice d’activités ne pouvant être organisées sous forme de télétravail ou déplacements professionnels ne pouvant être différés.", 180);
-            } else if(type=='miam') {
-                text3 = doc.splitTextToSize("Déplacements pour effectuer des achats de fournitures nécessaires à l’activité professionnelle et des achats de première nécessité dans des établissements dont les activités demeurent autorisées (liste sur gouvernement.fr).", 180);
-            } else if(type=='argh') {
-                text3 = doc.splitTextToSize("Consultations et soins ne pouvant être assurés à distance et ne pouvant être différés ; consultations et soins des patients atteints d'une affection de longue durée.", 180);
-
-            } else if(type=='famille') {
-                text3 = doc.splitTextToSize("Déplacements pour motif familial impérieux, pour l’assistance aux personnes vulnérables ou la garde d’enfants.", 180);
-            } else if(type=='footing!') {
-                text3 = doc.splitTextToSize("Déplacements brefs, dans la limite d'une heure quotidienne et dans un rayon maximal d'un kilomètre autour du domicile, liés soit à l'activité physique individuelle des personnes, à l'exclusion de toute pratique sportive collective et de toute proximité avec d'autres personnes, soit à la promenade avec les seules personnes regroupées dans un même domicile, soit aux besoins des animaux de compagnie.", 180);
-            } else if(type=='aieaieaie!') {
-                text3 = doc.splitTextToSize("Convocation judiciaire ou administrative.", 180);
-            } else if(type=='faitesunemissiondinteretgeneralmaissurtoutnesortezpas!') {
-                text3 = doc.splitTextToSize("Participation à des missions d’intérêt général sur demande de l’autorité administrative.", 180);
+            var text3 = '';
+            var inc = 0;
+            if(cbtravail.is(':checked')) {
+                inc++;
+                text3 += inc+"/ Déplacements entre le domicile et le lieu d’exercice de l’activité professionnelle, lorsqu’ils sont indispensables à l’exercice d’activités ne pouvant être organisées sous forme de télétravail ou déplacements professionnels ne pouvant être différés.\n\n";
             }
+            if(cbcourses.is(':checked')) {
+                inc++;
+                text3 +=inc+"/ Déplacements pour effectuer des achats de fournitures nécessaires à l’activité professionnelle et des achats de première nécessité dans des établissements dont les activités demeurent autorisées (liste sur gouvernement.fr).\n\n";
+            }
+            if(cbsante.is(':checked')) {
+                inc++;
+                text3 += inc+"/ Consultations et soins ne pouvant être assurés à distance et ne pouvant être différés ; consultations et soins des patients atteints d'une affection de longue durée.\n\n";
+            }
+            if(cbfamille.is(':checked')) {
+                inc++;
+                text3 += inc +"/ Déplacements pour motif familial impérieux, pour l’assistance aux personnes vulnérables ou la garde d’enfants.\n\n";
+            }
+            if(cbsport.is(':checked')) {
+                inc++;
+                text3 += inc +"/ Déplacements brefs, dans la limite d'une heure quotidienne et dans un rayon maximal d'un kilomètre autour du domicile, liés soit à l'activité physique individuelle des personnes, à l'exclusion de toute pratique sportive collective et de toute proximité avec d'autres personnes, soit à la promenade avec les seules personnes regroupées dans un même domicile, soit aux besoins des animaux de compagnie.\n\n";
+            }
+            if(cbjudiciaire.is(':checked')) {
+                inc++;
+                text3 += inc +"/ Convocation judiciaire ou administrative.\n\n";
+            }
+            if(cbmissions.is(':checked')) {
+                inc++;
+                text3 += inc +"/ Participation à des missions d’intérêt général sur demande de l’autorité administrative.";
+            }
+            text3 = doc.splitTextToSize(text3,180);
             doc.text(text3, 20, pos);
-            pos +=(text2.length*lineheight)+21;
+
+            pos +=(text3.length*6);
             doc.text("Fait à "+attville+" le "+attdate+" à "+attheure+"h"+attmn, 190, pos, null, null, "right");
             var canvas = document.getElementById("myCanvas");
             var imageURI = canvas.toDataURL("image/jpg");
-            // $('#signimg').val(imageURI);
             pos += 7;
+            doc.addImage(qrcodeimagee, "JPEG", 10, pos, 50, 50);
+            doc.text('Crée le: '+dg+'/'+dm+'/'+dy+' à '+hg+'h'+mg, 10, pos+55);
             doc.addImage(imageURI, "JPEG", 160, pos, 50, 37.5);
+            doc.addPage();
+            doc.addImage(qrcodeimagee, "JPEG", 10, 20, 100, 100);
             doc.save('corona_attestation.pdf');
         }
-    </script>
-    <script>
+
         $(document).ready(function()
         {
             ;(function($){
@@ -171,7 +207,7 @@
     </script>
 </head>
 <body>
-<div>Mise à jour avec la nouvelle version de l'attestation du 23 mars 2020.</div>
+<div>Mise à jour du 06/04/2020, nouvelle attestation numérique avec qrcode, et toujours sans aucun enregistrement de vos données !  (version offline téléchargeable en bas de la page) <br /> <span style="color: #007bff">La signature n'est plus demandée sur la nouvelle attestation, nous avons laissé le pad signature, il est possible de signer ou de laisser vide.</span></div>
 <br><br>
 <h1>Générateur d'attestation COVID-19</h1>
 
@@ -180,9 +216,13 @@ Civilité : <select name="gender" id="gender" class="form-control">
     <option value="1">Mme.</option>
     <option value="2">M.</option>
 </select><br />
-Nom et Prénom : <input type="text" value="" name="name" id="name" class="form-control" required>
+Nom : <input type="text" value="" name="name" id="name" class="form-control" required>
+<br />
+Prenom : <input type="text" value="" name="firstname" id="firstname" class="form-control" required>
 <br />
 Date de naissance : <input type="text" value="" name="birthday" id="birthday" class="form-control">
+<br />
+Ville de naissance : <input type="text" value="" name="borntown" id="borntown" class="form-control">
 <br />
 Adresse : <input type="text" value="" name="address" id="address" class="form-control" required>
 <br />
@@ -190,15 +230,51 @@ Code postal : <input type="text" value="" name="attcp" id="attcp" class="form-co
 <br />
 Ville : <input type="text" value="" name="attville" id="attville" class="form-control">
 <br />
-Nature : <select name="type" id="type" class="form-control">
-    <option value="pro">Professionnel</option>
-    <option value="miam">Achats de première nécessité</option>
-    <option value="argh">Santé</option>
-    <option value="famille">Familiale/garde d'enfants</option>
-    <option value="footing!">Sport individuel/animaux de compagnie</option>
-    <option value="aieaieaie!">Convocation judiciaire ou administration</option>
-    <option value="faitesunemissiondinteretgeneralmaissurtoutnesortezpas!">Missions d'intéret général sur demande des autorités</option>
-</select><br />
+Nature :
+<br />
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" value="travail" id="cbtravail" name="type">
+    <label class="form-check-label" for="cbtravail">
+        Déplacements entre le domicile et le lieu d’exercice de l’activité professionnelle, lorsqu’ils sont indispensables à l’exercice d’activités ne pouvant être organisées sous forme de télétravail ou déplacements professionnels ne pouvant être différés
+    </label>
+</div>
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" value="courses" id="cbcourses" name="type">
+    <label class="form-check-label" for="cbcourses">
+        Déplacements pour effectuer des achats de fournitures nécessaires à l’activité professionnelle et des achats de première nécessité dans des établissements dont les activités demeurent autorisées (liste sur gouvernement.fr).
+    </label>
+</div>
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" value="sante" id="cbsante" name="type">
+    <label class="form-check-label" for="cbsante">
+        Consultations et soins ne pouvant être assurés à distance et ne pouvant être différés ; consultations et soins des patients atteints d'une affection de longue durée.
+    </label>
+</div>
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" value="famille" id="cbfamille" name="type">
+    <label class="form-check-label" for="cbfamille">
+        Déplacements pour motif familial impérieux, pour l’assistance aux personnes vulnérables ou la garde d’enfants.
+    </label>
+</div>
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" value="sport" id="cbsport" name="type">
+    <label class="form-check-label" for="cbsport">
+        Déplacements brefs, dans la limite d'une heure quotidienne et dans un rayon maximal d'un kilomètre autour du domicile, liés soit à l'activité physique individuelle des personnes, à l'exclusion de toute pratique sportive collective et de toute proximité avec d'autres personnes, soit à la promenade avec les seules personnes regroupées dans un même domicile, soit aux besoins des animaux de compagnie.
+    </label>
+</div>
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" value="judiciaire" id="cbjudiciaire" name="type">
+    <label class="form-check-label" for="cbjudiciaire">
+        Convocation judiciaire ou administrative.
+    </label>
+</div>
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" value="missions" id="cbmissions" name="type">
+    <label class="form-check-label" for="cbmissions">
+        Participation à des missions d’intérêt général sur demande de l’autorité administrative.
+    </label>
+</div>
+<br />
 
 Date de l'attestation : <input type="text" value="" name="attdate" id="attdate" class="form-control">
 Heure de début de la sortie :
@@ -228,6 +304,9 @@ Votre signature :
         signaturePad.clear();
     });
     gettime();
+</script>
+<script type="text/javascript">
+
 </script>
 <br/>
 <br/>
